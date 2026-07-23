@@ -18,13 +18,7 @@
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    background: #111;
-  }
-
-  .wrap img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
+    background: transparent;
   }
 
   .play-btn {
@@ -51,7 +45,6 @@
 
 <div class="wrap">
   <iframe id="sc-iframe" src=""></iframe>
-  <img id="art-img" src="" alt="">
   <button class="play-btn" id="btn-play" aria-label="Play">
     <svg id="icon-play" width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
     <svg id="icon-pause" width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -68,27 +61,11 @@
     try { trackUrl = decodeURIComponent(params.get('url')); } catch(e) { trackUrl = params.get('url'); }
   }
 
-  // Background image — pass ?img=<encoded image URL>. Falls back to SoundCloud artwork if omitted.
-  const imgParam = params.get('img');
-  if (imgParam) {
-    try { document.getElementById('art-img').src = decodeURIComponent(imgParam); } catch(e) { document.getElementById('art-img').src = imgParam; }
-  }
-
   const iframe = document.getElementById('sc-iframe');
   iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(trackUrl)}&auto_play=false&show_artwork=false&hide_related=true`;
 
   const widget = SC.Widget(iframe);
   let playing = false;
-
-  widget.bind(SC.Widget.Events.READY, () => {
-    if (!imgParam) {
-      widget.getCurrentSound(sound => {
-        if (sound && sound.artwork_url) {
-          document.getElementById('art-img').src = sound.artwork_url.replace('-large', '-t500x500');
-        }
-      });
-    }
-  });
 
   widget.bind(SC.Widget.Events.PLAY, () => {
     playing = true;
